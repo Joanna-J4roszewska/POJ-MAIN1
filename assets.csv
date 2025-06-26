@@ -1,0 +1,4 @@
+symbol,name,type,initial_price
+AAPL,Apple Inc.,Stock,150.00
+GOOG,Alphabet Inc.,Stock,2800.00
+TBOND,Treasury Bond,Bond,1000.00

@@ -1,0 +1,45 @@
+Implementacja Persystencji Plikowej Portfela:
+Zdefiniuj interfejs PortfolioRepository (w persistence), jeśli jeszcze go nie ma, z metodami void save(Portfolio p) i Optional<Portfolio> load().
+Stwórz klasę FilePortfolioRepository implementującą ten interfejs. Wybierz format (np. JSON) i użyj odpowiedniej biblioteki (np. Jackson) do serializacji/deserializacji obiektu Portfolio. Zadbaj o ścieżkę do pliku zapisu. Obsłuż IOException.
+Zmodyfikuj (lub stwórz) PortfolioService, aby korzystał z PortfolioRepository do realizacji operacji zapisu i wczytania stanu.
+2. Implementacja Persystencji Plikowej CSV dla Aktywów:
+Zaprojektuj prosty schemat "bazy danych" CSV, np. plik assets.csv z kolumnami: symbol, name, type, initial_price.
+Stwórz klasę CsvConfig (w persistence) do zarządzania ścieżkami do plików CSV i ich inicjalizacji. Może tworzyć domyślny plik assets.csv przy pierwszym uruchomieniu, jeśli nie istnieje.
+Zdefiniuj interfejs AssetRepository (w persistence) z metodą Map<String, Asset> loadAssetDefinitions().
+Stwórz klasę CsvAssetRepository implementującą ten interfejs. Użyj biblioteki do parsowania CSV (np. OpenCSV) lub własną implementację do odczytu pliku assets.csv. Przetwórz wiersze, tworząc odpowiednie obiekty (Stock lub Bond na podstawie kolumny type) i zwracając je w mapie. Obsłuż IOException.
+Zmodyfikuj klasę Market, aby w konstruktorze przyjmowała AssetRepository i używała go do inicjalizacji mapy assetMap.
+3. Struktura Modułowa (Java 9+):
+Dla każdego logicznego modułu (np. model, portfolio, market, persistence, ui, main) stwórz plik module-info.java.
+Zadeklaruj nazwy modułów (np. com.stockmarket.model).
+W każdym module zadeklaruj zależności (requires nazwa.innego.modulu;). Moduł persistence będzie potrzebował requires java.base; (dla java.nio.file). Jeśli używasz zewnętrznych bibliotek (Jackson, OpenCSV), również zadeklaruj requires nazwa.biblioteki;.
+Zadeklaruj eksportowane pakiety (exports com.stockmarket.model;), aby były widoczne dla innych modułów, które ich wymagają. Pakiet zawierający klasę główną musi być dostępny dla launchera Javy.
+4. Implementacja Konsolowego UI:
+Stwórz klasę ConsoleUI (w pakiecie ui).
+Wstrzyknij do niej potrzebne serwisy (np. PortfolioService, Market).
+Zaimplementuj metodę start(), która zawiera główną pętlę aplikacji:
+Wyświetl menu opcji.
+Odczytaj wybór użytkownika (Scanner).
+Użyj instrukcji switch lub if-else, aby wywołać odpowiednie metody obsługujące akcje.
+Stwórz prywatne metody pomocnicze dla każdej opcji menu (np. displayMarket(), handleBuyAction(), handleSaveAction()). Metody te będą wywoływać odpowiednie metody serwisów, obsługiwać ich wyniki (lub wyjątki) i formatować dane do wyświetlenia. Metody handleBuyAction/handleSellAction będą dodatkowo pobierać dane od użytkownika (symbol, ilość).
+Pamiętaj o dodaniu opcji wyjścia z pętli (zakończenia aplikacji).
+5. Konfiguracja i Uruchomienie Aplikacji:
+W klasie głównej StockMarketApp (w module main):
+Utwórz instancje repozytoriów (CSV dla aktywów, plikowego dla portfela).
+Utwórz instancję Market, przekazując repozytorium aktywów.
+Utwórz instancję PortfolioService, przekazując repozytorium portfela.
+Utwórz instancję ConsoleUI, wstrzykując utworzone serwisy i rynek.
+Wywołaj metodę wczytującą stan portfela na starcie (obsługując Optional).
+Wywołaj ui.start() aby uruchomić interfejs użytkownika.
+Testowanie w Etapie 4:
+Gruntownie przetestuj interfejs użytkownika: czy wszystkie opcje menu działają, czy dane wejściowe są poprawnie odczytywane, czy wyniki i błędy są czytelnie prezentowane.
+Sprawdź funkcjonalność zapisu i odczytu stanu portfela do pliku – zamknij aplikację, uruchom ponownie i zweryfikuj, czy stan został poprawnie odtworzony.
+Zweryfikuj, czy lista aktywów na rynku jest poprawnie ładowana z pliku CSV. Spróbuj dodać/usunąć wpis w pliku CSV i zobacz efekt po restarcie aplikacji.
+Przetestuj całościowe przepływy: kupno, sprzedaż, aktualizacja cen, zapis, odczyt.
+Jeśli używasz modułów, spróbuj zbudować i uruchomić aplikację jako modularny JAR, aby upewnić się, że zależności i eksporty są poprawnie skonfigurowane.
+Przykładowa struktura pliku assets.csv:
+symbol,name,type,initial_price
+AAPL,Apple Inc.,STOCK,150.00
+GOOGL,Alphabet Inc.,STOCK,2800.00
+MSFT,Microsoft Corporation,STOCK,300.00
+BOND1,Government Bond 10Y,BOND,1000.00
+BOND2,Corporate Bond 5Y,BOND,950.00 
